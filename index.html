@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartDecanat AI</title>
+<style>
+:root{
+--bg:#f1f5f9;
+--card:#ffffff;
+--text:#0f172a;
+--muted:#64748b;
+--faint:#94a3b8;
+--border:#e2e8f0;
+--soft:#f8fafc;
+--ai-bg:#eff6ff;
+--ai-border:#bfdbfe;
+}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);transition:background .35s ease,color .35s ease}
+button{transition:background .25s ease,color .25s ease,border-color .25s ease,transform .15s ease}
+button:active{transform:scale(.98)}
+.hidden{display:none!important}
+.disc{background:#0f172a;color:#e2e8f0;font-size:11px;padding:8px;text-align:center}
+.disc span{color:#fbbf24;font-weight:700}
+.login-bg{min-height:95vh;background:linear-gradient(135deg,#1e3a8a,#0f172a);display:flex;align-items:center;justify-content:center;padding:16px}
+.card-login{width:100%;max-width:390px;background:var(--card);color:var(--text);border-radius:24px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,.4);border:1px solid var(--border)}
+.logo{width:56px;height:56px;margin:0 auto 10px;border-radius:16px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px}
+.inp{width:100%;padding:11px;margin:5px 0 12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;outline:none;transition:background .3s ease,color .3s ease,border-color .3s ease}
+.inp:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.btn{width:100%;padding:12px;border:none;border-radius:12px;background:#2563eb;color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.btn:hover{background:#1d4ed8}
+.q-btn{width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px;margin-top:8px;border-radius:12px;border:1px solid var(--border);background:var(--soft);color:var(--text);cursor:pointer;text-align:left}
+.q-btn:hover{border-color:#93c5fd}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:80px;transition:background .35s ease}
+.top-bar{background:var(--card);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;transition:background .35s ease,border-color .35s ease}
+.top-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{min-width:36px;height:34px;padding:0 9px;border-radius:11px;border:1px solid var(--border);background:var(--soft);color:var(--text);font-size:16px;line-height:1;cursor:pointer}
+.icon-btn:hover{border-color:#93c5fd}
+.logout-btn{padding:8px 13px;border-radius:10px;border:none;background:var(--soft);color:var(--text);font-weight:700;cursor:pointer}
+.logout-btn:hover{background:#fee2e2;color:#b91c1c}
+.days{display:flex;gap:6px;margin:12px 0}
+.day{flex:1;padding:8px 4px;border-radius:14px;border:none;background:#0f172a;color:#fff;text-align:center;cursor:pointer}
+.day:hover{filter:brightness(1.12)}
+.day.active{background:#2563eb}
+.cnt{display:inline-block;width:16px;height:16px;border-radius:50%;font-size:10px;line-height:16px;margin-top:4px;font-weight:800}
+.lesson{background:var(--card);border-radius:16px;padding:12px;margin-bottom:10px;display:flex;gap:12px;border:1px solid var(--border);transition:background .35s ease,border-color .35s ease}
+.t-box{width:66px;border-radius:12px;color:#fff;padding:8px 4px;text-align:center;display:flex;flex-direction:column;justify-content:space-between;font-size:12px;font-weight:800}
+.box{background:var(--card);border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--border);transition:background .35s ease,border-color .35s ease}
+.nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--card);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0;transition:background .35s ease,border-color .35s ease}
+.nav button{background:none;border:none;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:10px}
+.nav button.active{color:#2563eb;background:rgba(37,99,235,.1)}
+.ai-card{background:linear-gradient(180deg,var(--ai-bg),var(--card));border-color:var(--ai-border)!important}
+.ai-title{font-size:12px;font-weight:800;color:#1d4ed8;margin-bottom:8px}
+.ai-chat{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:2px;scroll-behavior:smooth}
+.ai-msg{max-width:88%;padding:10px 12px;border-radius:14px;font-size:12px;line-height:1.5}
+.ai-msg.bot{align-self:flex-start;background:var(--soft);color:var(--text);border-bottom-left-radius:5px}
+.ai-msg.user{align-self:flex-end;background:#2563eb;color:#fff;border-bottom-right-radius:5px}
+.ai-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 8px}
+.ai-quick button{padding:8px 5px;border-radius:10px;border:1px solid var(--ai-border);background:var(--ai-bg);color:#1d4ed8;font-size:10px;font-weight:800;cursor:pointer;line-height:1.25}
+.ai-quick button:hover{background:#dbeafe}
+.ai-input{display:flex;gap:8px;align-items:flex-start}
+.ai-input .inp{flex:1;margin:0;padding:10px 11px;font-size:13px}
+.ai-send{width:auto;min-width:92px;padding:10px 12px;font-size:12px}
+body.dark{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--muted:#cbd5e1;--faint:#94a3b8;--border:#334155;--soft:#0b1220;--ai-bg:#172554;--ai-border:#1d4ed8;background:#0f172a;color:#e2e8f0}
+body.dark .disc{background:#020617}
+body.dark .login-bg{background:linear-gradient(135deg,#020617,#111827)}
+body.dark .card-login{box-shadow:0 20px 45px rgba(0,0,0,.55)}
+body.dark .inp:focus{box-shadow:0 0 0 3px rgba(96,165,250,.18)}
+body.dark .q-btn:hover,body.dark .icon-btn:hover{border-color:#1d4ed8}
+body.dark .day{background:#1e293b}
+body.dark .btn:hover{background:#3b82f6}
+body.dark .logout-btn:hover{background:#450a0a;color:#fca5a5}
+body.dark .nav button.active{color:#60a5fa;background:rgba(96,165,250,.14)}
+body.dark .ai-quick button{color:#93c5fd;background:#1e3a8a;border-color:#1d4ed8}
+body.dark .ai-quick button:hover{background:#1d4ed8}
+</style>
+</head>
+<body>
+<div class="disc"><span>Концепт «Вайб-кодинг»</span> • Не является официальным сервисом вуза. Все данные вымышленные.</div>
+<div id="loginView" class="login-bg">
+<div class="card-login">
+<div style="text-align:center">
+<div class="logo">🎓</div>
+<div style="color:#2563eb;font-size:12px;font-weight:800">✨ SmartDecanat AI</div>
+<h2 style="margin:4px 0">Цифровой деканат</h2>
+<p style="font-size:12px;color:var(--muted);margin:0 0 16px">Единое окно студента и администрации</p>
+</div>
+<label style="font-size:12px;font-weight:700">Email</label>
+<input id="emailInp" class="inp" value="alexey@campus-demo.ru">
+<label style="font-size:12px;font-weight:700">Пароль</label>
+<input id="passInp" class="inp" type="password" value="password123">
+<button type="button" class="btn" id="mainLoginBtn">Войти в кабинет</button>
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+<div style="font-size:11px;color:var(--faint);font-weight:800;text-align:center">БЫСТРЫЙ ВХОД (1 КЛИК)</div>
+<button type="button" class="q-btn" data-user="alexey@campus-demo.ru">
+<div><b>Студент 1 — Соколов А.Д.</b><br><small style="color:var(--muted)">Факультет МЭО • Группа МЭО-104</small></div>
+<span style="color:#2563eb;font-weight:800">→</span>
+</button>
+<button type="button" class="q-btn" data-user="maria@campus-demo.ru">
+<div><b>Студент 2 — Крылова М.А.</b><br><small style="color:var(--muted)">Факультет МП • Группа МП-302</small></div>
+<span style="color:#7e22ce;font-weight:800">→</span>
+</button>
+<button type="button" class="q-btn" data-user="decanat@campus-demo.ru">
+<div><b>Сотрудник деканата</b><br><small style="color:var(--muted)">Обработка заявок и ЭЦП</small></div>
+<span style="color:#059669;font-weight:800">→</span>
+</button>
+</div>
+</div>
+</div>
+
+<div id="appView" class="app hidden">
+<div class="top-bar">
+<div><b>SmartDecanat AI</b><br><small id="subHead" style="color:var(--muted)"></small></div>
+<div class="top-actions">
+<button type="button" id="themeBtn" class="icon-btn" aria-label="Переключить тему" title="Переключить тему">🌙</button>
+<button type="button" id="logoutBtn" class="logout-btn">Выйти</button>
+</div>
+</div>
+<div id="content" style="padding:14px"></div>
+<div id="navBar" class="nav">
+<button type="button" id="t-sched" class="active" data-tab="sched">📅<br>Расписание</button>
+<button type="button" id="t-grade" data-tab="grade">🎓<br>Оценки</button>
+<button type="button" id="t-req" data-tab="req">📄<br>Справки</button>
+<button type="button" id="t-notif" data-tab="notif">🔔<br>События</button>
+<button type="button" id="t-prof" data-tab="prof">👤<br>Профиль</button>
+</div>
+</div>
+
+<script>
+let savedTheme=null;
+try{savedTheme=localStorage.getItem('smartDecanatTheme');}catch(e){}
+function applyTheme(mode){
+const dark=mode==='dark';
+document.body.classList.toggle('dark',dark);
+const btn=document.getElementById('themeBtn');
+if(btn){btn.textContent=dark?'☀️':'🌙';btn.title=dark?'Включить светлую тему':'Включить тёмную тему';btn.setAttribute('aria-label',btn.title);}
+try{localStorage.setItem('smartDecanatTheme',dark?'dark':'light');}catch(e){}
+}
+function initTheme(){applyTheme(savedTheme==='dark'?'dark':'light');}
+initTheme();
+const DB={
+'alexey@campus-demo.ru':{role:'student',name:'Соколов Алексей Дмитриевич',group:'МЭО-104',fac:'Факультет МЭО, 2 курс',gpa:'4.85',day:'Чт',
+sched:{
+'Пн':[{s:'09:00',e:'10:30',n:'1п',c:'#2563eb',t:'Мировая экономика',p:'проф. Волкова Е.Н.',r:'Ауд. 412',f:2}],
+'Вт':[{s:'10:45',e:'12:15',n:'2п',c:'#d97706',t:'Статистика',p:'проф. Козлов И.В.',r:'Ауд. 310',f:1}],
+'Ср':[],
+'Чт':[{s:'12:20',e:'13:55',n:'3п',c:'#dc2626',t:'Макроэкономический анализ',p:'проф. Морозова Н.Д.',r:'Ауд. 1-203',f:3},{s:'14:00',e:'14:45',n:'4п',c:'#2563eb',t:'Международные финансы',p:'проф. Здрайковский А.П.',r:'Ауд. 1-209',f:1},{s:'14:50',e:'16:25',n:'4п',c:'#f59e0b',t:'Эконометрика',p:'доц. Соколова И.Р.',r:'Ауд. 304',f:2},{s:'16:35',e:'18:10',n:'5п',c:'#7c3aed',t:'Деловой английский язык',p:'ст. преп. Степаненко Е.Б.',r:'Ауд. 214',f:2}],
+'Пт':[{s:'10:45',e:'12:15',n:'2п',c:'#059669',t:'Цифровая экономика и ИИ',p:'проф. Белов К.М.',r:'Ауд. 501',f:1}],
+'Сб':[]},
+grades:[{subj:'Макроэкономика',pts:'94 / 100',mark:'Отлично (5)'},{subj:'Мировая экономика',pts:'91 / 100',mark:'Отлично (5)'},{subj:'Деловой английский',pts:'88 / 100',mark:'Хорошо (4)'}],
+notifs:['🔥 Дедлайн: сдать курсовую по эконометрике до 25 ноября.','📌 Перенос: иностранный язык перенесён в ауд. 215.']},
+'maria@campus-demo.ru':{role:'student',name:'Крылова Мария Андреевна',group:'МП-302',fac:'Международно-правовой факультет, 3 курс',gpa:'4.60',day:'Чт',
+sched:{
+'Пн':[{s:'10:45',e:'12:15',n:'2п',c:'#7c3aed',t:'Международное публичное право',p:'проф. Громов В.А.',r:'Ауд. 201',f:2}],
+'Вт':[],'Ср':[],
+'Чт':[{s:'10:45',e:'12:15',n:'2п',c:'#dc2626',t:'Международное частное право',p:'проф. Захаров Д.Е.',r:'Ауд. 115',f:2},{s:'12:20',e:'13:55',n:'3п',c:'#059669',t:'Юридический французский язык',p:'доц. Дюбуа М.Л.',r:'Ауд. 404',f:1}],
+'Пт':[{s:'09:00',e:'10:30',n:'1п',c:'#2563eb',t:'Право Европейского Союза',p:'проф. Никитин Р.О.',r:'Ауд. 220',f:1}],
+'Сб':[]},
+grades:[{subj:'Международное публичное право',pts:'95 / 100',mark:'Отлично (5)'},{subj:'Международное частное право',pts:'84 / 100',mark:'Хорошо (4)'}],
+notifs:['🔥 Выбрать базу преддипломной практики до 28 ноября.']},
+'decanat@campus-demo.ru':{role:'staff',name:'Орлова Елена Викторовна'}
+};
+let REQS=[
+{id:'№412',user:'alexey@campus-demo.ru',who:'Соколов А.Д. (МЭО-104)',doc:'Справка об обучении',st:'Готово (ЭЦП)'},
+{id:'№415',user:'alexey@campus-demo.ru',who:'Соколов А.Д. (МЭО-104)',doc:'Выписка оценок (транскрипт)',st:'В обработке'},
+{id:'№416',user:'maria@campus-demo.ru',who:'Крылова М.А. (МП-302)',doc:'Справка для льготного проезда',st:'В обработке'}
+];
+let cur=null;
+function doLogin(){
+const e=document.getElementById('emailInp').value.trim().toLowerCase();
+if(!DB[e]){alert('Выберите тестовый аккаунт');return;}
+cur=e;
+document.getElementById('loginView').classList.add('hidden');
+document.getElementById('appView').classList.remove('hidden');
+if(DB[e].role==='staff'){
+document.getElementById('subHead').textContent='Панель деканата';
+document.getElementById('navBar').classList.add('hidden');
+renderStaff();
+}else{
+document.getElementById('subHead').textContent=DB[e].name+' • '+DB[e].group;
+document.getElementById('navBar').classList.remove('hidden');
+tab('sched');
+}
+}
+document.getElementById('mainLoginBtn').addEventListener('click',doLogin);
+document.querySelectorAll('.q-btn[data-user]').forEach(btn=>{
+btn.addEventListener('click',()=>{document.getElementById('emailInp').value=btn.dataset.user;doLogin();});
+});
+document.getElementById('logoutBtn').addEventListener('click',()=>{
+document.getElementById('appView').classList.add('hidden');
+document.getElementById('loginView').classList.remove('hidden');
+});
+document.getElementById('themeBtn').addEventListener('click',()=>{
+applyTheme(document.body.classList.contains('dark')?'light':'dark');
+});
+document.querySelectorAll('#navBar button').forEach(btn=>{
+btn.addEventListener('click',()=>tab(btn.dataset.tab));
+});
+function setDay(code){DB[cur].day=code;tab('sched');}
+function tab(t){
+document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+document.getElementById('t-'+t).classList.add('active');
+const u=DB[cur],c=document.getElementById('content');
+if(t==='sched'){
+const ds=[{code:'Пн',num:'16'},{code:'Вт',num:'17'},{code:'Ср',num:'18'},{code:'Чт',num:'19'},{code:'Пт',num:'20'},{code:'Сб',num:'21'}];
+const list=u.sched[u.day]||[];
+c.innerHTML=`<h3 style="margin:0">Расписание • ${u.group}</h3>
+<div class="days">${ds.map(d=>{const cnt=u.sched[d.code].length;return`<button type="button" class="day ${u.day===d.code?'active':''}" onclick="setDay('${d.code}')"><b>${d.num}</b><br><small>${d.code}</small><br><span class="cnt" style="background:${cnt===0?'#10b981':cnt>=4?'#ef4444':'#f59e0b'}">${cnt}</span></button>`}).join('')}</div>
+${list.length?list.map(l=>`
+<div class="lesson">
+<div class="t-box" style="background:${l.c}">
+<div>${l.s}</div>
+<div style="opacity:.75;font-size:10px">${l.n}</div>
+<div>${l.e}</div>
+</div>
+<div style="flex:1">
+<b style="font-size:14px">${l.t}</b>
+<div style="font-size:12px;color:var(--muted);margin-top:3px">👤 ${l.p}</div>
+<div style="font-size:12px;color:var(--muted)">📍 ${l.r} • ${l.f} п. в неделю</div>
+</div>
+</div>`).join(''):'<div class="box" style="text-align:center;color:var(--muted);padding:28px">🎉 Занятий нет — выходной!</div>'}`;
+}else if(t==='grade'){
+c.innerHTML=`<h3 style="margin:0 0 4px">Оценки • ${u.group}</h3>
+<p style="font-size:12px;color:var(--muted);margin:0 0 12px">Средний балл (GPA): <b style="color:#2563eb">${u.gpa}</b></p>
+${u.grades.map(g=>`
+<div class="box">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<b>${g.subj}</b>
+<span style="font-size:11px;font-weight:800;color:${g.mark.includes('5')?'#059669':'#d97706'};background:${g.mark.includes('5')?'#ecfdf5':'#fffbeb'};padding:3px 8px;border-radius:8px">${g.mark}</span>
+</div>
+<div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+<div style="flex:1;height:8px;background:var(--soft);border-radius:6px;overflow:hidden">
+<div style="width:${parseInt(g.pts)}%;height:100%;border-radius:6px;background:${g.mark.includes('5')?'#10b981':'#f59e0b'}"></div>
+</div>
+<small style="color:var(--muted);font-weight:700">${g.pts}</small>
+</div>
+</div>`).join('')}`;
+}else if(t==='req'){
+const mine=REQS.filter(r=>r.user===cur);
+c.innerHTML=`<h3 style="margin:0">Справки и заявки</h3>
+<div class="box" style="margin-top:12px">
+<label style="font-size:12px;font-weight:700">Тип документа</label>
+<select id="docSel" class="inp" style="margin-top:4px">
+<option>Справка об обучении</option>
+<option>Выписка оценок (транскрипт)</option>
+<option>Справка для льготного проезда</option>
+<option>Справка для военкомата</option>
+<option>Копия приказа о зачислении</option>
+</select>
+<button type="button" class="btn" onclick="newReq()">🚀 Подать заявку</button>
+<div style="font-size:11px;color:var(--faint);margin-top:8px;text-align:center">Заявка уйдёт в деканат и будет подписана ЭЦП</div>
+</div>
+<h4 style="margin:16px 0 8px">Мои заявки</h4>
+${mine.length?mine.map(r=>`
+<div class="box">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<b>${r.doc}</b>
+<span style="font-size:11px;font-weight:800;color:${stColor(r.st)};background:${stBg(r.st)};padding:3px 8px;border-radius:8px">${r.st}</span>
+</div>
+<small style="color:var(--faint)">Заявка ${r.id}</small>
+</div>`).join(''):'<div class="box" style="text-align:center;color:var(--muted)">Заявок пока нет</div>'}`;
+}else if(t==='notif'){
+c.innerHTML=`<h3 style="margin:0 0 12px">События и уведомления</h3>
+${u.notifs.map(n=>`<div class="box" style="display:flex;gap:10px;align-items:flex-start">
+<span style="font-size:18px">${n.slice(0,2)}</span>
+<div style="font-size:13px;line-height:1.45">${n.slice(3)}</div>
+</div>`).join('')}`;
+}else if(t==='prof'){
+const chat=initAI(u);
+c.innerHTML=`<div class="box" style="text-align:center;padding:24px 14px">
+<div class="logo" style="width:72px;height:72px;font-size:32px">👤</div>
+<h3 style="margin:10px 0 2px">${u.name}</h3>
+<p style="font-size:12px;color:var(--muted);margin:0">${u.fac}</p>
+<span style="display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:#2563eb;background:var(--ai-bg);padding:4px 12px;border-radius:10px">${u.group}</span>
+</div>
+<div class="box">
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--soft)"><small style="color:var(--muted)">Email</small><b style="font-size:13px">${cur}</b></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--soft)"><small style="color:var(--muted)">Степень обучения</small><b style="font-size:13px">Бакалавриат</b></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--soft)"><small style="color:var(--muted)">Форма обучения</small><b style="font-size:13px">Очная</b></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0"><small style="color:var(--muted)">Средний балл (GPA)</small><b style="font-size:13px;color:#059669">${u.gpa}</b></div>
+</div>
+<div class="box ai-card">
+<div class="ai-title">✨ AI-ассистент деканата</div>
+<div id="aiChat" class="ai-chat">${chat.map(m=>`<div class="ai-msg ${m.who}">${esc(m.text).replace(/\n/g,'<br>')}</div>`).join('')}</div>
+<div class="ai-quick">
+<button type="button" onclick="askAI('Когда следующая пара?')">Когда следующая пара?</button>
+<button type="button" onclick="askAI('Какой у меня средний балл?')">Какой у меня средний балл?</button>
+<button type="button" onclick="askAI('Как заказать справку?')">Как заказать справку?</button>
+</div>
+<div class="ai-input">
+<input id="aiText" class="inp" type="text" autocomplete="off" placeholder="Напишите вопрос деканату..." onkeydown="if(event.key==='Enter')sendAI()">
+<button type="button" class="btn ai-send" onclick="sendAI()">Отправить</button>
+</div>
+</div>`;
+setTimeout(renderAIHistory,0);}
+}
+let aiHistory={};
+function esc(value){
+return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function studentFirstName(u){return (u.name.split(' ')[1]||u.name.split(' ')[0]||'студент');}
+function initAI(u){
+if(!aiHistory[cur]){aiHistory[cur]=[{who:'bot',text:'Здравствуйте, '+studentFirstName(u)+'! Я могу подсказать по расписанию, GPA, справкам, дедлайнам и оценкам. Выберите быстрый вопрос или напишите свой.'}];}
+return aiHistory[cur];
+}
+function renderAIHistory(){
+const box=document.getElementById('aiChat');
+if(!box||!aiHistory[cur])return;
+box.innerHTML=aiHistory[cur].map(m=>`<div class="ai-msg ${m.who}">${esc(m.text).replace(/\n/g,'<br>')}</div>`).join('');
+box.scrollTop=box.scrollHeight;
+}
+function askAI(question){
+question=String(question||'').trim();
+if(!question||!DB[cur])return;
+const u=DB[cur],input=document.getElementById('aiText'),send=document.querySelector('.ai-send');
+if(input)input.value='';
+initAI(u);
+aiHistory[cur].push({who:'user',text:question});
+const typing={who:'bot',text:'Печатаю...'};
+aiHistory[cur].push(typing);
+renderAIHistory();
+if(send)send.disabled=true;
+setTimeout(()=>{
+typing.text=makeAIAnswer(question);
+renderAIHistory();
+if(send)send.disabled=false;
+if(input)input.focus();
+},450);
+}
+function sendAI(){
+const input=document.getElementById('aiText');
+if(!input)return;
+const question=input.value;
+input.value='';
+askAI(question);
+}
+function timeToMin(time){const parts=time.split(':');return Number(parts[0])*60+Number(parts[1]);}
+function nextLesson(u){
+const DAYS=['Пн','Вт','Ср','Чт','Пт','Сб'];
+const jsDay=new Date().getDay();
+const today=DAYS[jsDay-1]||null;
+if(today){
+const now=new Date().getHours()*60+new Date().getMinutes();
+const future=(u.sched[today]||[]).find(l=>timeToMin(l.s)>now);
+if(future)return{day:today,lesson:future};
+}
+const start=today?DAYS.indexOf(today)+1:0;
+for(let i=0;i<DAYS.length;i++){
+const day=DAYS[(start+i)%DAYS.length];
+const lesson=(u.sched[day]||[])[0];
+if(lesson)return{day,lesson};
+}
+return null;
+}
+function lessonLine(l){return l.s+'–'+l.e+' — '+l.t+' • '+l.p+' • '+l.r;}
+function makeAIAnswer(question){
+const u=DB[cur],q=question.toLowerCase().replace(/ё/g,'е').trim();
+const mine=REQS.filter(r=>r.user===cur);
+const subject=u.grades.find(g=>q.includes(g.subj.toLowerCase().replace(/ё/g,'е')));
+if(subject){return 'По предмету «'+subject.subj+'» у вас '+subject.pts+' ('+subject.mark+').';}
+if((q.includes('следующ')&&q.includes('пар'))||q.includes('расписан')||q.includes('занят')){
+const next=nextLesson(u);
+if(!next)return 'Ближайших занятий в расписании не найдено. Проверьте вкладку «Расписание».';
+const label=(new Date().getDay()>=1&&new Date().getDay()<=6&&['Пн','Вт','Ср','Чт','Пт','Сб'][new Date().getDay()-1]===next.day)?'сегодня':'в '+next.day;
+return 'Следующая пара — '+lessonLine(next.lesson)+' ('+label+').';
+}
+if(q.includes('средн')||q.includes('gpa')||q.includes('балл')){
+return 'Ваш средний балл (GPA): '+u.gpa+'.\nТекущие оценки:\n'+u.grades.map(g=>'• '+g.subj+': '+g.pts+' — '+g.mark).join('\n');
+}
+if(q.includes('справк')||q.includes('заявк')||q.includes('заказ')){
+return 'Чтобы заказать справку: откройте вкладку «Справки», выберите тип документа и нажмите «Подать заявку». После подписания ЭЦП документ появится в списке.\n'+(mine.length?'Ваши текущие заявки:\n'+mine.map(r=>'• '+r.id+' — '+r.doc+': '+r.st).join('\n'):'Активных заявок пока нет.');
+}
+if(q.includes('дедлайн')||q.includes('срок')||q.includes('сдать')||q.includes('практик')){
+const deadlines=u.notifs.filter(n=>n.toLowerCase().includes('дедлайн')||n.toLowerCase().includes('до '));
+return deadlines.length?'Актуальные сроки:\n'+deadlines.map(n=>'• '+n.replace(/^[^ ]+ /,'')).join('\n'):'Критичных дедлайнов по вашим уведомлениям не найдено.';
+}
+if(q.includes('задолжен')||q.includes('пересдач')||q.includes('долг')){
+const risky=u.grades.filter(g=>parseInt(g.pts)<90);
+return risky.length?'Зон внимания по текущим оценкам:\n'+risky.map(g=>'• '+g.subj+': '+g.pts+' ('+g.mark+')').join('\n')+'\nУсловия пересдач уточняйте у профиля кафедры или в деканате.':'По загруженным оценкам явных академических задолженностей не указано. Самая низкая текущая оценка: '+u.grades[u.grades.length-1].pts+'.';
+}
+if(q.includes('уведом')||q.includes('событ')){
+return u.notifs.length?'Ваши актуальные события:\n'+u.notifs.map(n=>'• '+n.replace(/^[^ ]+ /,'')).join('\n'):'Новых уведомлений нет.';
+}
+if(q.includes('стипенд')){
+return 'При GPA '+u.gpa+' у вас высокий академический результат. Точный размер и категория стипендии зависят от приказа факультета; следите за уведомлениями деканата.';
+}
+if(q.includes('кто я')||q.includes('профиль')||q.includes('групп')){
+return 'Вы — '+u.name+', '+u.fac+', группа '+u.group+'. Текущий GPA: '+u.gpa+'.';
+}
+return 'Я анализирую демо-данные вашего профиля. Могу ответить на вопросы о расписании, GPA, оценках по предметам, заявках на справки, дедлайнах и уведомлениях.';
+}
+function stColor(st){return st==='Готово (ЭЦП)'?'#059669':'#d97706';}
+function stBg(st){return st==='Готово (ЭЦП)'?'#ecfdf5':'#fffbeb';}
+function newReq(){
+const doc=document.getElementById('docSel').value;
+const id='№'+(420+REQS.length);
+REQS.unshift({id,user:cur,who:DB[cur].name.split(' ')[0]+' '+DB[cur].name.split(' ')[1][0]+'.'+DB[cur].name.split(' ')[2][0]+'. ('+DB[cur].group+')',doc,st:'В обработке'});
+alert('Заявка '+id+' «'+doc+'» подана в деканат');
+tab('req');
+}
+function approveReq(id){
+const r=REQS.find(x=>x.id===id);
+if(r){r.st='Готово (ЭЦП)';renderStaff();}
+}
+function renderStaff(){
+const c=document.getElementById('content');
+const pending=REQS.filter(r=>r.st!=='Готово (ЭЦП)').length;
+c.innerHTML=`<h3 style="margin:0">Панель деканата</h3>
+<p style="font-size:12px;color:var(--muted);margin:4px 0 14px">${DB['decanat@campus-demo.ru'].name} • Очередь заявок: <b>${pending}</b></p>
+${REQS.map(r=>`
+<div class="box">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<b>${r.doc}</b>
+<span style="font-size:11px;font-weight:800;color:${stColor(r.st)};background:${stBg(r.st)};padding:3px 8px;border-radius:8px">${r.st}</span>
+</div>
+<div style="font-size:12px;color:var(--muted);margin-top:6px">👤 ${r.who}</div>
+<small style="color:var(--faint)">Заявка ${r.id}</small>
+${r.st!=='Готово (ЭЦП)'?`<button type="button" class="btn" style="margin-top:10px;background:#059669" onclick="approveReq('${r.id}')">✅ Одобрить и подписать ЭЦП</button>`:'<div style="margin-top:8px;font-size:12px;color:#059669;font-weight:700">✔ Подписано ЭЦП</div>'}
+</div>`).join('')}`;
+}
+</script>
+</body>
+</html>
